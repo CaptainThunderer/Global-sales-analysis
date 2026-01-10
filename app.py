@@ -169,7 +169,7 @@ else:
 # =================================================
 # 🧾 EXECUTIVE SUMMARY
 # =================================================
-st.subheader("🧾 Executive Summary")
+st.subheader("🧾 Detailed Report")
 
 top_product = product_sales.idxmax()
 best_month = monthly_sales.loc[monthly_sales["Sales"].idxmax(), "Month"]
@@ -183,4 +183,4 @@ st.write(f"""
 📌 **Best Month:** {best_month}  
 """)
 
-st.success("✅ Dashboard loaded successfully (All edge cases handled)")
+st.success("Analysis Complete! Adjust filters to explore more insights.")
