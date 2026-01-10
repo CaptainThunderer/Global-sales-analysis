@@ -5,9 +5,13 @@ import seaborn as sns
 import streamlit as st
 
 # ================= UI CONFIG =================
-st.set_page_config(page_title="Global Sales Analytics", layout="wide")
+st.set_page_config(
+    page_title="Global Sales Analytics Dashboard",
+    layout="wide"
+)
+
 st.title("🌍 Global Sales Analytics Dashboard")
-st.caption("Filter-driven Business Intelligence & Forecasting")
+st.caption("Filter-Driven Business Intelligence & Forecasting")
 
 # ================= LOAD DATA =================
 df = pd.read_csv("sales_data.csv")
@@ -16,51 +20,54 @@ df["Year"] = df["Order_Date"].dt.year
 df["Month"] = df["Order_Date"].dt.to_period("M").astype(str)
 
 # ================= SIDEBAR FILTERS =================
-st.sidebar.header("🔎 Filters")
+st.sidebar.header("🔎 Filter Options")
 
-# ---- DATE RANGE FILTER ----
+# --- Country filter (Select All default) ---
+countries = sorted(df["Country"].unique())
+selected_countries = st.sidebar.multiselect(
+    "Select Countries",
+    options=countries,
+    default=countries
+)
+
+# --- Product filter (Select All default) ---
+products = sorted(df["Product"].unique())
+selected_products = st.sidebar.multiselect(
+    "Select Products",
+    options=products,
+    default=products
+)
+
+# --- Date range filter (SAFE) ---
 min_date = df["Order_Date"].min()
 max_date = df["Order_Date"].max()
 
 date_range = st.sidebar.date_input(
-    "Select Time Duration",
+    "Select Date Range",
     value=(min_date, max_date),
     min_value=min_date,
     max_value=max_date
 )
 
-# ---- PRODUCT FILTER (SELECT ALL) ----
-products = df["Product"].unique().tolist()
-selected_products = st.sidebar.multiselect(
-    "Select Products",
-    options=["All"] + products,
-    default=["All"]
-)
-
-# ---- COUNTRY FILTER (SELECT ALL) ----
-countries = df["Country"].unique().tolist()
-selected_countries = st.sidebar.multiselect(
-    "Select Countries",
-    options=["All"] + countries,
-    default=["All"]
-)
+# --- Defensive date handling ---
+if isinstance(date_range, tuple) and len(date_range) == 2:
+    start_date, end_date = date_range
+else:
+    start_date = min_date
+    end_date = max_date
 
 # ================= APPLY FILTERS =================
-filtered_df = df.copy()
-
-# Date filter
-filtered_df = filtered_df[
-    (filtered_df["Order_Date"] >= pd.to_datetime(date_range[0])) &
-    (filtered_df["Order_Date"] <= pd.to_datetime(date_range[1]))
+filtered_df = df[
+    (df["Country"].isin(selected_countries)) &
+    (df["Product"].isin(selected_products)) &
+    (df["Order_Date"] >= pd.to_datetime(start_date)) &
+    (df["Order_Date"] <= pd.to_datetime(end_date))
 ]
 
-# Product filter
-if "All" not in selected_products:
-    filtered_df = filtered_df[filtered_df["Product"].isin(selected_products)]
-
-# Country filter
-if "All" not in selected_countries:
-    filtered_df = filtered_df[filtered_df["Country"].isin(selected_countries)]
+# ================= NO DATA SAFETY CHECK =================
+if filtered_df.empty:
+    st.warning("⚠️ No data available for the selected filters.")
+    st.stop()
 
 # ================= KPI SECTION =================
 total_sales = filtered_df["Sales"].sum()
@@ -68,85 +75,80 @@ total_profit = filtered_df["Profit"].sum()
 avg_discount = filtered_df["Discount"].mean()
 
 k1, k2, k3 = st.columns(3)
-k1.metric("💰 Sales", f"₹{total_sales:,.0f}")
-k2.metric("📈 Profit", f"₹{total_profit:,.0f}")
+k1.metric("💰 Total Sales", f"₹{total_sales:,.0f}")
+k2.metric("📈 Total Profit", f"₹{total_profit:,.0f}")
 k3.metric("🏷 Avg Discount", f"{avg_discount:.2f}%")
 
 st.divider()
 
 # =================================================
-# 📈 ITEM-WISE MONTHLY SALES (CLEAN)
+# 📈 MONTHLY SALES TREND (ADAPTIVE)
 # =================================================
-st.subheader("📊 Item-wise Monthly Sales Trend")
+st.subheader("📈 Monthly Sales Trend")
 
-monthly_item_sales = (
-    filtered_df
-    .groupby(["Month", "Product"])["Sales"]
-    .sum()
-    .reset_index()
-)
-
-fig1, ax1 = plt.subplots(figsize=(5.5, 3))
-sns.lineplot(
-    data=monthly_item_sales,
-    x="Month",
-    y="Sales",
-    hue="Product",
-    marker="o",
-    ax=ax1
-)
-ax1.set_title("Monthly Sales by Item")
-plt.xticks(rotation=45)
-plt.tight_layout()
-st.pyplot(fig1)
-
-# =================================================
-# 🔮 FORECASTING (EMA BASED ON FILTERS)
-# =================================================
-st.subheader("🔮 Sales Forecast (Based on Selected Filters)")
-
-monthly_total = (
+monthly_sales = (
     filtered_df
     .groupby("Month")["Sales"]
     .sum()
     .reset_index()
 )
 
-monthly_total["Forecast"] = monthly_total["Sales"].ewm(span=3).mean()
-
-fig2, ax2 = plt.subplots(figsize=(5.5, 3))
-ax2.plot(monthly_total["Month"], monthly_total["Sales"], marker="o", label="Actual")
-ax2.plot(monthly_total["Month"], monthly_total["Forecast"],
-         linestyle="--", label="Forecast")
-ax2.set_title("Filtered Sales Forecast")
-ax2.legend()
-plt.xticks(rotation=45)
-plt.tight_layout()
-st.pyplot(fig2)
-
-# =================================================
-# 🌍 GLOBAL PRODUCT SALES (CLEAN BAR)
-# =================================================
-st.subheader("🌍 Global Product Sales")
-
-global_product_sales = (
-    filtered_df
-    .groupby("Product")["Sales"]
-    .sum()
-    .sort_values(ascending=False)
-)
-
-fig3, ax3 = plt.subplots(figsize=(5, 3))
-global_product_sales.plot(kind="bar", ax=ax3)
-ax3.set_title("Product-wise Global Sales")
-ax3.set_ylabel("Sales")
-plt.tight_layout()
-st.pyplot(fig3)
+if len(monthly_sales) < 2:
+    st.info("ℹ️ Not enough months for a trend line. Showing single-month sales.")
+    fig1, ax1 = plt.subplots(figsize=(4, 3))
+    ax1.bar(monthly_sales["Month"], monthly_sales["Sales"])
+    ax1.set_xlabel("Month")
+    ax1.set_ylabel("Sales")
+    plt.tight_layout()
+    st.pyplot(fig1)
+else:
+    fig1, ax1 = plt.subplots(figsize=(5.5, 3))
+    ax1.plot(monthly_sales["Month"], monthly_sales["Sales"], marker="o")
+    ax1.set_xlabel("Month")
+    ax1.set_ylabel("Sales")
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    st.pyplot(fig1)
 
 # =================================================
-# 🔥 COUNTRY vs PRODUCT HEATMAP (FILTER AWARE)
+# 🔮 FORECASTING (ONLY IF POSSIBLE)
 # =================================================
-st.subheader("🔥 Country vs Product Sales Heatmap")
+st.subheader("🔮 Sales Forecast")
+
+if len(monthly_sales) < 3:
+    st.warning("⚠️ Forecasting requires at least 3 months of data.")
+else:
+    monthly_sales["EMA_Forecast"] = monthly_sales["Sales"].ewm(span=3).mean()
+    fig2, ax2 = plt.subplots(figsize=(5.5, 3))
+    ax2.plot(monthly_sales["Month"], monthly_sales["Sales"], label="Actual", marker="o")
+    ax2.plot(monthly_sales["Month"], monthly_sales["EMA_Forecast"],
+             linestyle="--", label="Forecast")
+    ax2.legend()
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    st.pyplot(fig2)
+
+# =================================================
+# 📊 PRODUCT-WISE SALES
+# =================================================
+st.subheader("📊 Product-wise Sales")
+
+product_sales = filtered_df.groupby("Product")["Sales"].sum()
+
+if product_sales.empty:
+    st.warning("⚠️ No product sales data available.")
+else:
+    fig3, ax3 = plt.subplots(figsize=(5.5, 3))
+    product_sales.sort_values(ascending=False).plot(kind="bar", ax=ax3)
+    ax3.set_xlabel("Product")
+    ax3.set_ylabel("Sales")
+    plt.tight_layout()
+    st.pyplot(fig3)
+
+# =================================================
+# 🔥 COUNTRY vs PRODUCT HEATMAP
+# =================================================
+st.subheader("🔥 Country vs Product Heatmap")
 
 pivot = pd.pivot_table(
     filtered_df,
@@ -156,30 +158,29 @@ pivot = pd.pivot_table(
     aggfunc="sum"
 )
 
-fig4, ax4 = plt.subplots(figsize=(6, 3.5))
-sns.heatmap(pivot, annot=True, fmt=".0f", cmap="coolwarm", ax=ax4)
-plt.tight_layout()
-st.pyplot(fig4)
+if pivot.empty:
+    st.warning("⚠️ Heatmap not available for selected filters.")
+else:
+    fig4, ax4 = plt.subplots(figsize=(6, 3.5))
+    sns.heatmap(pivot, annot=True, fmt=".0f", cmap="coolwarm", ax=ax4)
+    plt.tight_layout()
+    st.pyplot(fig4)
 
 # =================================================
 # 🧾 EXECUTIVE SUMMARY
 # =================================================
 st.subheader("🧾 Executive Summary")
 
-if not filtered_df.empty:
-    best_product = global_product_sales.idxmax()
-    best_month = monthly_total.loc[monthly_total["Sales"].idxmax(), "Month"]
+top_product = product_sales.idxmax()
+best_month = monthly_sales.loc[monthly_sales["Sales"].idxmax(), "Month"]
 
-    st.write(f"""
-    **Selected Duration:** {date_range[0]} to {date_range[1]}  
-    **Products Considered:** {', '.join(selected_products)}  
-    **Countries Considered:** {', '.join(selected_countries)}  
+st.write(f"""
+**Countries:** {', '.join(selected_countries)}  
+**Products:** {', '.join(selected_products)}  
+**Period:** {start_date} → {end_date}  
 
-    🔹 **Top Product:** {best_product}  
-    🔹 **Peak Sales Month:** {best_month}  
-    🔹 **Total Revenue:** ₹{total_sales:,.0f}  
+📌 **Top Product:** {top_product}  
+📌 **Best Month:** {best_month}  
+""")
 
-    📌 *Insights dynamically generated based on applied filters.*
-    """)
-else:
-    st.warning("No data available for the selected filters.")
+st.success("✅ Dashboard loaded successfully (All edge cases handled)")
