@@ -138,4 +138,3 @@ Author: [CaptainThunderer](https://github.com/CaptainThunderer)
 
 ---
 
-Just say the word 👍
