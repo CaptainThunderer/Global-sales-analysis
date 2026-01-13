@@ -165,6 +165,59 @@ else:
     sns.heatmap(pivot, annot=True, fmt=".0f", cmap="coolwarm", ax=ax4)
     plt.tight_layout()
     st.pyplot(fig4)
+# =================================================
+# 🥧 SALES DISTRIBUTION (PIE CHART)
+# =================================================
+st.subheader("🥧 Sales Distribution")
+
+pie_choice = st.radio(
+    "View Sales Distribution By:",
+    ["Country", "Product"],
+    horizontal=True
+)
+
+if pie_choice == "Country":
+    pie_data = filtered_df.groupby("Country")["Sales"].sum()
+else:
+    pie_data = filtered_df.groupby("Product")["Sales"].sum()
+
+if pie_data.empty:
+    st.warning("⚠️ Not enough data for pie chart.")
+else:
+    fig_pie, ax_pie = plt.subplots(figsize=(4, 4))
+    ax_pie.pie(
+        pie_data,
+        labels=pie_data.index,
+        autopct="%1.1f%%",
+        startangle=140
+    )
+    ax_pie.set_title(f"Sales Share by {pie_choice}")
+    st.pyplot(fig_pie)
+# =================================================
+# 📊 COUNTRY vs PRODUCT (GROUPED BAR CHART)
+# =================================================
+st.subheader("📊 Country vs Product – Comparative Analysis")
+
+pivot_bar = pd.pivot_table(
+    filtered_df,
+    values="Sales",
+    index="Country",
+    columns="Product",
+    aggfunc="sum"
+)
+
+if pivot_bar.empty:
+    st.warning("⚠️ No data available for comparison.")
+else:
+    fig_bar, ax_bar = plt.subplots(figsize=(6, 4))
+    pivot_bar.plot(kind="bar", ax=ax_bar)
+    ax_bar.set_xlabel("Country")
+    ax_bar.set_ylabel("Sales")
+    ax_bar.set_title("Country vs Product Sales Comparison")
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    st.pyplot(fig_bar)
+
 
 # =================================================
 # 🧾 EXECUTIVE SUMMARY
