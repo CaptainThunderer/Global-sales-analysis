@@ -184,15 +184,25 @@ else:
 if pie_data.empty:
     st.warning("⚠️ Not enough data for pie chart.")
 else:
-    fig_pie, ax_pie = plt.subplots(figsize=(4, 4))
+    fig_pie, ax_pie = plt.subplots(figsize=(3, 3))  # 👈 reduced size
+
     ax_pie.pie(
         pie_data,
         labels=pie_data.index,
         autopct="%1.1f%%",
-        startangle=140
+        startangle=140,
+        radius=0.9,              # 👈 controls pie size
+        textprops={"fontsize": 8} # 👈 smaller label text
     )
-    ax_pie.set_title(f"Sales Share by {pie_choice}")
+
+    ax_pie.set_title(
+        f"Sales Share by {pie_choice}",
+        fontsize=10
+    )
+
+    plt.tight_layout()
     st.pyplot(fig_pie)
+
 # =================================================
 # 📊 COUNTRY vs PRODUCT (GROUPED BAR CHART)
 # =================================================
