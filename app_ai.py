@@ -3,9 +3,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import streamlit as st
-from scipy.stats import zscore  # For anomaly detection
-import plotly.express as px  # For interactive maps (if you want to add later)
-from io import BytesIO  # For report export
+from scipy.stats import zscore
+import plotly.express as px
+from io import BytesIO
+from statsmodels.tsa.arima.model import ARIMA  # For advanced forecasting
+from sklearn.ensemble import RandomForestRegressor, IsolationForest  # For predictive modeling and anomaly detection
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import mean_absolute_error
 
 # ================= UI CONFIG =================
 st.set_page_config(
@@ -14,7 +19,7 @@ st.set_page_config(
 )
 
 st.title("🌍 Global Sales Analytics Dashboard")
-st.caption("Filter-Driven Business Intelligence & Forecasting with AI Insights")
+st.caption("AI-Powered Business Intelligence & Forecasting")
 
 # ================= LOAD DATA =================
 df = pd.read_csv("sales_data.csv")
@@ -73,13 +78,11 @@ if filtered_df.empty:
     st.stop()
 
 # ================= SESSION STATE FOR PERSONALIZATION =================
-# Initialize session state for tracking user interactions
 if "selected_countries_history" not in st.session_state:
     st.session_state.selected_countries_history = []
 if "selected_products_history" not in st.session_state:
     st.session_state.selected_products_history = []
 
-# Update history (simple tracking)
 st.session_state.selected_countries_history.append(selected_countries)
 st.session_state.selected_products_history.append(selected_products)
 
@@ -125,35 +128,54 @@ else:
     st.pyplot(fig1)
 
 # =================================================
-# 🔮 FORECASTING (ONLY IF POSSIBLE)
+# 🔮 ADVANCED AI FORECASTING (ENHANCED WITH ARIMA)
 # =================================================
-st.subheader("🔮 Sales Forecast")
+st.subheader("🔮 AI Sales Forecast")
 
-if len(monthly_sales) < 3:
-    st.warning("⚠️ Forecasting requires at least 3 months of data.")
+if len(monthly_sales) >= 5:  # ARIMA needs more data
+    try:
+        # Fit ARIMA model (p=1, d=1, q=1 as default; tune as needed)
+        model = ARIMA(monthly_sales["Sales"], order=(1, 1, 1))
+        model_fit = model.fit()
+        forecast_steps = min(3, len(monthly_sales))  # Forecast next 3 months or less
+        forecast = model_fit.forecast(steps=forecast_steps)
+        forecast_index = pd.date_range(start=monthly_sales["Month"].iloc[-1], periods=forecast_steps+1, freq='M')[1:]
+        forecast_df = pd.DataFrame({"Month": forecast_index.strftime('%Y-%m'), "Forecast": forecast})
+        
+        fig2, ax2 = plt.subplots(figsize=(5.5, 3))
+        ax2.plot(monthly_sales["Month"], monthly_sales["Sales"], label="Actual", marker="o")
+        ax2.plot(forecast_df["Month"], forecast_df["Forecast"], linestyle="--", label="ARIMA Forecast", marker="x")
+        ax2.legend()
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        st.pyplot(fig2)
+        st.info(f"📊 Forecast Accuracy (MAE on historical data): {mean_absolute_error(monthly_sales['Sales'][:-forecast_steps], model_fit.fittedvalues[:-forecast_steps]):.2f}")
+    except Exception as e:
+        st.warning(f"⚠️ ARIMA forecasting failed: {str(e)}. Falling back to EMA.")
+        monthly_sales["EMA_Forecast"] = monthly_sales["Sales"].ewm(span=3).mean()
+        fig2, ax2 = plt.subplots(figsize=(5.5, 3))
+        ax2.plot(monthly_sales["Month"], monthly_sales["Sales"], label="Actual", marker="o")
+        ax2.plot(monthly_sales["Month"], monthly_sales["EMA_Forecast"], linestyle="--", label="EMA Forecast")
+        ax2.legend()
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        st.pyplot(fig2)
 else:
-    monthly_sales["EMA_Forecast"] = monthly_sales["Sales"].ewm(span=3).mean()
-    fig2, ax2 = plt.subplots(figsize=(5.5, 3))
-    ax2.plot(monthly_sales["Month"], monthly_sales["Sales"], label="Actual", marker="o")
-    ax2.plot(monthly_sales["Month"], monthly_sales["EMA_Forecast"],
-             linestyle="--", label="Forecast")
-    ax2.legend()
-    plt.xticks(rotation=45)
-    plt.tight_layout()
-    st.pyplot(fig2)
+    st.warning("⚠️ Advanced forecasting requires at least 5 months of data.")
 
 # =================================================
-# 🚨 AI-POWERED ANOMALY DETECTION AND ALERTS (NEW FEATURE)
+# 🚨 ENHANCED AI ANOMALY DETECTION (ISOLATION FOREST)
 # =================================================
-st.subheader("🚨 Anomaly Detection & Alerts")
+st.subheader("🚨 AI Anomaly Detection & Alerts")
 
-if len(monthly_sales) >= 3:
-    # Calculate Z-scores for anomaly detection
-    monthly_sales["Z_Score"] = zscore(monthly_sales["Sales"])
-    anomalies = monthly_sales[abs(monthly_sales["Z_Score"]) > 2]  # Threshold for anomalies
+if len(monthly_sales) >= 5:
+    # Use Isolation Forest for anomaly detection
+    iso_forest = IsolationForest(contamination=0.1, random_state=42)  # 10% expected anomalies
+    monthly_sales["Anomaly_Score"] = iso_forest.fit_predict(monthly_sales[["Sales"]])
+    anomalies = monthly_sales[monthly_sales["Anomaly_Score"] == -1]
     
     if not anomalies.empty:
-        st.warning(f"⚠️ Anomalies detected in: {', '.join(anomalies['Month'].tolist())}. Possible causes: Market changes or data errors.")
+        st.warning(f"🚨 Anomalies detected in: {', '.join(anomalies['Month'].tolist())}. AI suggests investigating market disruptions or data issues.")
         fig_anom, ax_anom = plt.subplots(figsize=(5.5, 3))
         ax_anom.plot(monthly_sales["Month"], monthly_sales["Sales"], marker="o", label="Sales")
         ax_anom.scatter(anomalies["Month"], anomalies["Sales"], color="red", label="Anomalies", s=100)
@@ -162,29 +184,142 @@ if len(monthly_sales) >= 3:
         plt.tight_layout()
         st.pyplot(fig_anom)
     else:
-        st.success("✅ No anomalies detected in sales data.")
+        st.success("✅ No anomalies detected by AI.")
 else:
-    st.info("ℹ️ Anomaly detection requires at least 3 months of data.")
+    st.info("ℹ️ AI anomaly detection requires at least 5 months of data.")
 
 # =================================================
-# 🎯 DYNAMIC SCENARIO PLANNING & WHAT-IF ANALYSIS (NEW FEATURE)
+# 🤖 PREDICTIVE SALES MODELING (RANDOM FOREST REGRESSION)
 # =================================================
-st.subheader("🎯 What-If Scenario Planning")
+st.subheader("🤖 Predictive Sales Modeling")
 
-# Sliders for simulation
-discount_change = st.slider("Adjust Discount (%)", -50, 50, 0, help="Simulate discount changes")
-price_change = st.slider("Adjust Price (%)", -50, 50, 0, help="Simulate price changes")
+# Prepare data for modeling (encode categorical features)
+le_country = LabelEncoder()
+le_product = LabelEncoder()
+filtered_df["Country_Encoded"] = le_country.fit_transform(filtered_df["Country"])
+filtered_df["Product_Encoded"] = le_product.fit_transform(filtered_df["Product"])
 
-# Calculate projected sales/profit
+features = ["Discount", "Country_Encoded", "Product_Encoded"]
+target = "Sales"
+
+if len(filtered_df) >= 10:  # Minimum data for training
+    X = filtered_df[features]
+    y = filtered_df[target]
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    
+    # Train Random Forest model
+    rf_model = RandomForestRegressor(n_estimators=100, random_state=42)
+    rf_model.fit(X_train, y_train)
+    predictions = rf_model.predict(X_test)
+    mae = mean_absolute_error(y_test, predictions)
+    
+    st.write(f"**Model Performance:** Mean Absolute Error (MAE): ₹{mae:.2f}")
+    
+    # Feature Importance
+    importance = rf_model.feature_importances_
+    fig_imp, ax_imp = plt.subplots(figsize=(4, 3))
+    ax_imp.barh(features, importance)
+    ax_imp.set_xlabel("Importance")
+    ax_imp.set_title("Feature Importance for Sales Prediction")
+    plt.tight_layout()
+    st.pyplot(fig_imp)
+    
+    # Prediction Demo: Allow user to input values
+    st.subheader("Predict Sales for New Scenario")
+    user_discount = st.slider("Discount (%)", 0.0, 50.0, avg_discount)
+    user_country = st.selectbox("Country", countries)
+    user_product = st.selectbox("Product", products)
+    
+    user_input = pd.DataFrame({
+        "Discount": [user_discount],
+        "Country_Encoded": [le_country.transform([user_country])[0]],
+        "Product_Encoded": [le_product.transform([user_product])[0]]
+    })
+    predicted_sales = rf_model.predict(user_input)[0]
+    st.metric("Predicted Sales", f"₹{predicted_sales:,.0f}")
+else:
+    st.warning("⚠️ Predictive modeling requires at least 10 data points.")
+
+# =================================================
+# 🎯 DYNAMIC SCENARIO PLANNING & WHAT-IF ANALYSIS (WITH ML PREDICTIONS)
+# =================================================
+st.subheader("🎯 What-If Scenario Planning with ML Predictions")
+
+discount_change = st.slider("Adjust Discount (%)", -50, 50, 0, help="Simulate discount changes to see ML-predicted impact on sales/profit.")
+price_change = st.slider("Adjust Price (%)", -50, 50, 0, help="Simulate price changes (affects sales indirectly via discount).")
+
 original_sales = total_sales
 original_profit = total_profit
-projected_sales = original_sales * (1 + price_change / 100) * (1 - discount_change / 100)
-projected_profit = original_profit * (1 + price_change / 100) * (1 - discount_change / 100)  # Simplified assumption
+
+# Use ML model for projections if available
+if len(filtered_df) >= 10 and 'rf_model' in locals():
+    # Adjust discount for projection (simulate price change by scaling discount)
+    adjusted_discount = avg_discount + discount_change  # New discount level
+    adjusted_discount = max(0, min(adjusted_discount, 100))  # Clamp to 0-100%
+    
+    # Prepare input for ML prediction: Use filtered data with adjusted discount
+    prediction_inputs = filtered_df.copy()
+    prediction_inputs["Discount"] = adjusted_discount  # Apply adjusted discount to all rows
+    
+    # Predict sales for each row
+    prediction_inputs["Predicted_Sales"] = rf_model.predict(prediction_inputs[features])
+    
+    # Aggregate predicted sales (average or sum across filtered data)
+    projected_sales = prediction_inputs["Predicted_Sales"].sum()  # Or .mean() if per-unit
+    
+    # Simulate projected profit (assuming profit = sales - cost; adjust if you have cost data)
+    # For simplicity, use original profit margin ratio
+    profit_margin = original_profit / original_sales if original_sales > 0 else 0
+    projected_profit = projected_sales * profit_margin * (1 + price_change / 100)  # Factor in price change
+    
+    st.info("📊 Projections powered by ML (Random Forest). Adjust sliders to see dynamic predictions.")
+else:
+    # Fallback to simple calculations if ML not available
+    projected_sales = original_sales * (1 + price_change / 100) * (1 - discount_change / 100)
+    projected_profit = original_profit * (1 + price_change / 100) * (1 - discount_change / 100)
+    st.warning("⚠️ ML model not available (need >=10 data points). Using simple projections.")
 
 col1, col2 = st.columns(2)
 col1.metric("Projected Sales", f"₹{projected_sales:,.0f}", delta=f"{((projected_sales - original_sales) / original_sales * 100):.1f}%")
 col2.metric("Projected Profit", f"₹{projected_profit:,.0f}", delta=f"{((projected_profit - original_profit) / original_profit * 100):.1f}%")
 
+# --- Dynamic Graph for ML Predictions ---
+st.subheader("📊 ML-Powered Scenario Impact Visualization")
+
+# Check for valid data before plotting
+if original_sales > 0 and original_profit > 0 and projected_sales >= 0 and projected_profit >= 0:
+    # Prepare data for bar chart
+    categories = ['Sales', 'Profit']
+    original_values = [original_sales, original_profit]
+    projected_values = [projected_sales, projected_profit]
+
+    x = np.arange(len(categories))  # Label locations
+    width = 0.35  # Bar width
+
+    fig_scenario, ax_scenario = plt.subplots(figsize=(6, 4))
+    bars1 = ax_scenario.bar(x - width/2, original_values, width, label='Original (CSV)', color='skyblue')
+    bars2 = ax_scenario.bar(x + width/2, projected_values, width, label='ML Projected', color='orange')
+
+    # Add labels and title
+    ax_scenario.set_xlabel('Metrics')
+    ax_scenario.set_ylabel('Amount (₹)')
+    ax_scenario.set_title('Original vs. ML-Projected Sales & Profit')
+    ax_scenario.set_xticks(x)
+    ax_scenario.set_xticklabels(categories)
+    ax_scenario.legend()
+
+    # Add value labels on bars
+    for bar in bars1:
+        height = bar.get_height()
+        ax_scenario.text(bar.get_x() + bar.get_width()/2., height, f'₹{height:,.0f}', ha='center', va='bottom', fontsize=9)
+    for bar in bars2:
+        height = bar.get_height()
+        ax_scenario.text(bar.get_x() + bar.get_width()/2., height, f'₹{height:,.0f}', ha='center', va='bottom', fontsize=9)
+
+    plt.tight_layout()
+    st.pyplot(fig_scenario)
+else:
+    st.warning("⚠️ Invalid data for visualization (e.g., zero values). Check filters or data.")
 # =================================================
 # 📊 PRODUCT-WISE SALES
 # =================================================
@@ -284,71 +419,29 @@ else:
     st.pyplot(fig_bar)
 
 # =================================================
-# 💡 PERSONALIZED DASHBOARD RECOMMENDATIONS (NEW FEATURE)
+# 💡 ENHANCED AI RECOMMENDATIONS
 # =================================================
-st.subheader("💡 Personalized Recommendations")
+st.subheader("💡 AI-Powered Recommendations")
 
-# Simple logic: Recommend based on history
 recent_countries = list(set(st.session_state.selected_countries_history[-1])) if st.session_state.selected_countries_history else []
 recent_products = list(set(st.session_state.selected_products_history[-1])) if st.session_state.selected_products_history else []
 
+# Correlation-based suggestions
+correlation = filtered_df[["Sales", "Discount"]].corr().iloc[0, 1]
+if abs(correlation) > 0.5:
+    st.info(f"🤖 AI Insight: Sales and Discount are {'positively' if correlation > 0 else 'negatively'} correlated ({correlation:.2f}). Consider adjusting discounts for better performance.")
+
 if recent_countries:
-    st.info(f"Based on your recent selections, consider exploring sales trends in {', '.join(recent_countries)} further or comparing with other countries.")
+    st.info(f"Based on your selections, AI recommends comparing {', '.join(recent_countries)} with underperforming regions for growth opportunities.")
 if recent_products:
-    st.info(f"You've viewed {', '.join(recent_products)} often—try the heatmap for deeper product-country insights.")
+    st.info(f"You've explored {', '.join(recent_products)}—AI suggests checking anomaly detection for these products.")
 
 # =================================================
-# 📄 AUTOMATED REPORT GENERATION & EXPORT (NEW FEATURE)
+# 📄 AUTOMATED REPORT GENERATION & EXPORT
 # =================================================
 st.subheader("📄 Generate & Export Report")
 
 if st.button("Generate PDF Report"):
-    # Simple PDF generation (basic text-based for demo; use ReportLab for full charts)
     report_content = f"""
     Global Sales Analytics Report
     =============================
-    Countries: {', '.join(selected_countries)}
-    Products: {', '.join(selected_products)}
-    Period: {start_date} to {end_date}
-    
-    KPIs:
-    - Total Sales: ₹{total_sales:,.0f}
-    - Total Profit: ₹{total_profit:,.0f}
-    - Avg Discount: {avg_discount:.2f}%
-    
-    Top Insights:
-    - Best Month: {monthly_sales.loc[monthly_sales['Sales'].idxmax(), 'Month'] if not monthly_sales.empty else 'N/A'}
-    - Top Product: {product_sales.idxmax() if not product_sales.empty else 'N/A'}
-    
-    Anomalies: {'Detected' if not anomalies.empty else 'None'}
-    """
-    
-    # Create a downloadable PDF (simplified; for full charts, integrate with libraries like FPDF)
-    buffer = BytesIO()
-    buffer.write(report_content.encode('utf-8'))
-    buffer.seek(0)
-    st.download_button(
-        label="Download Report",
-        data=buffer,
-        file_name="sales_report.txt",  # Change to .pdf with proper library
-        mime="text/plain"
-    )
-
-# =================================================
-# 🧾 EXECUTIVE SUMMARY
-# =================================================
-st.subheader("🧾 Detailed Report")
-
-top_product = product_sales.idxmax() if not product_sales.empty else "N/A"
-best_month = monthly_sales.loc[monthly_sales["Sales"].idxmax(), "Month"] if not monthly_sales.empty else "N/A"
-
-st.write(f"""
-**Countries:** {', '.join(selected_countries)}  
-**Products:** {', '.join(selected_products)}  
-**Period:** {start_date} → {end_date}  
-
-📌 **Top Product:** {top_product}  
-📌 **Best Month:** {best_month}  
-""")
-
-st.success("Analysis Complete! Adjust filters to explore more insights.")
