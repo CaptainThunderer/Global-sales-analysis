@@ -220,20 +220,92 @@ else:
 
 
 # =================================================
-# 🧾 EXECUTIVE SUMMARY
+# 📄 FINAL BUSINESS SUMMARY REPORT
 # =================================================
-st.subheader("🧾 Detailed Report")
+st.subheader("📄 Global Sales Analytics Report")
 
-top_product = product_sales.idxmax()
-best_month = monthly_sales.loc[monthly_sales["Sales"].idxmax(), "Month"]
+# ---------- SAFE DATE FORMATTING ----------
+start_date_str = str(start_date)
+end_date_str = str(end_date)
 
-st.write(f"""
-**Countries:** {', '.join(selected_countries)}  
-**Products:** {', '.join(selected_products)}  
-**Period:** {start_date} → {end_date}  
+# ---------- TOP CONTRIBUTORS ----------
+top_country = filtered_df.groupby("Country")["Sales"].sum().idxmax()
+top_product = filtered_df.groupby("Product")["Sales"].sum().idxmax()
 
-📌 **Top Product:** {top_product}  
-📌 **Best Month:** {best_month}  
-""")
+# ---------- TOP MONTHS ----------
+top_months = (
+    monthly_sales.sort_values("Sales", ascending=False)
+    .head(3)
+)
 
-st.success("Analysis Complete! Adjust filters to explore more insights.")
+top_months_lines = [
+    f"{row['Month']}  →  ₹{row['Sales']:,.0f}"
+    for _, row in top_months.iterrows()
+]
+
+# ---------- SIMPLE ANOMALY CHECK ----------
+mean_sales = monthly_sales["Sales"].mean()
+std_sales = monthly_sales["Sales"].std()
+
+anomaly_months = monthly_sales[
+    abs(monthly_sales["Sales"] - mean_sales) > 2 * std_sales
+]["Month"].tolist()
+
+anomaly_text = ", ".join(anomaly_months) if anomaly_months else "No major anomalies detected"
+
+# ---------- REPORT TEXT ----------
+final_report = f"""
+GLOBAL SALES ANALYTICS REPORT
+=========================================
+
+FILTERS APPLIED
+-----------------------------------------
+Countries Selected : {", ".join(selected_countries)}
+Products Selected  : {", ".join(selected_products)}
+Date Range         : {start_date_str} to {end_date_str}
+
+KEY PERFORMANCE INDICATORS
+-----------------------------------------
+Total Sales        : ₹{total_sales:,.0f}
+Total Profit       : ₹{total_profit:,.0f}
+Average Discount   : {avg_discount:.2f}%
+
+TOP CONTRIBUTORS
+-----------------------------------------
+Top Country        : {top_country}
+Top Product        : {top_product}
+
+TOP MONTHS BY SALES
+-----------------------------------------
+{chr(10).join(top_months_lines)}
+
+ANOMALY INSIGHTS
+-----------------------------------------
+{anomaly_text}
+
+FORECASTING STATUS
+-----------------------------------------
+{"EMA Forecast Applied" if len(monthly_sales) >= 3 else "Not enough data for forecasting"}
+
+STRATEGIC OBSERVATIONS
+-----------------------------------------
+- Focus on high-performing products and regions
+- Review discount strategy to improve profitability
+- Monitor unusual sales fluctuations
+- Use trends for demand planning
+
+Report Generated On:
+{pd.Timestamp.now().strftime("%d-%m-%Y %H:%M:%S")}
+"""
+
+# ---------- DISPLAY REPORT ----------
+st.text(final_report)
+
+# ---------- DOWNLOAD OPTION ----------
+st.download_button(
+    label="⬇️ Download Report",
+    data=final_report,
+    file_name="global_sales_report.txt",
+    mime="text/plain"
+)
+
