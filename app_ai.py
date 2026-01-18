@@ -130,16 +130,16 @@ else:
 # =================================================
 # 🔮 AI SALES FORECAST (100% SAFE VERSION)
 # =================================================
-st.subheader("🔮 AI Sales Forecast")
+# =================================================
+# 🔮 AI SALES FORECAST (ARIMA – CLEAN & RELIABLE)
+# =================================================
+st.subheader("🔮 AI Sales Forecast (ARIMA)")
 
 try:
-    # --- FORCE monthly aggregation directly from filtered_df ---
+    # --- Prepare monthly time series ---
     ts_df = filtered_df.copy()
-
-    # Ensure datetime (safety)
     ts_df["Order_Date"] = pd.to_datetime(ts_df["Order_Date"])
 
-    # Monthly aggregation
     ts_monthly = (
         ts_df
         .set_index("Order_Date")
@@ -147,52 +147,75 @@ try:
         .sum()
     )
 
-    if len(ts_monthly) < 5:
-        st.warning("⚠️ At least 5 months of data required for forecasting.")
+    if len(ts_monthly) < 8:
+        st.warning("⚠️ At least 8 months of data required for ARIMA forecasting.")
     else:
-        # Train ARIMA
+        # --- Train ARIMA model ---
         model = ARIMA(ts_monthly, order=(1, 1, 1))
         model_fit = model.fit()
 
-        forecast_steps = 3
-        forecast = model_fit.forecast(steps=forecast_steps)
+        # --- 1️⃣ In-sample fitted values (SKIP first unstable point) ---
+        fitted_values = model_fit.predict(
+            start=ts_monthly.index[1],
+            end=ts_monthly.index[-1],
+            typ="levels"
+        )
 
-        # Future dates
+        # --- 2️⃣ Future forecast (NEXT 6 MONTHS) ---
+        forecast_steps = 6
+        future_forecast = model_fit.forecast(steps=forecast_steps)
+
         future_dates = pd.date_range(
             start=ts_monthly.index[-1] + pd.offsets.MonthEnd(1),
             periods=forecast_steps,
             freq="M"
         )
 
-        # --- Plot (guaranteed alignment) ---
-        fig2, ax2 = plt.subplots(figsize=(6.5, 3.5))
+        # --- Combine fitted + future forecast ---
+        full_forecast = pd.concat(
+            [
+                fitted_values,
+                pd.Series(future_forecast.values, index=future_dates)
+            ]
+        )
 
-        ax2.plot(
+        # --- Plot ---
+        fig, ax = plt.subplots(figsize=(7.5, 4))
+
+        ax.plot(
             ts_monthly.index,
             ts_monthly.values,
             marker="o",
-            label="Actual Sales"
+            label="Actual"
         )
 
-        ax2.plot(
-            future_dates,
-            forecast.values,
+        ax.plot(
+            full_forecast.index,
+            full_forecast.values,
             linestyle="--",
             marker="x",
-            label="ARIMA Forecast"
+            label="Forecast"
         )
 
-        ax2.set_xlabel("Month")
-        ax2.set_ylabel("Sales")
-        ax2.set_title("Monthly Sales Forecast (ARIMA)")
-        ax2.legend()
+        ax.set_xlabel("Month")
+        ax.set_ylabel("Sales")
+        ax.set_title("Monthly Sales Forecast (ARIMA)")
+        ax.legend()
         plt.xticks(rotation=45)
         plt.tight_layout()
 
-        st.pyplot(fig2)
+        st.pyplot(fig)
+
+        # --- Reliability Metric (MAE) ---
+        mae = mean_absolute_error(
+            ts_monthly.loc[fitted_values.index],
+            fitted_values
+        )
+
+        st.info(f"📏 Forecast Reliability (MAE on historical data): ₹{mae:,.2f}")
 
 except Exception as e:
-    st.error(f"❌ Forecast failed due to unexpected error: {e}")
+    st.error(f"❌ ARIMA forecast failed: {e}")
 
 # =================================================
 # 🚨 ENHANCED AI ANOMALY DETECTION (ISOLATION FOREST)
