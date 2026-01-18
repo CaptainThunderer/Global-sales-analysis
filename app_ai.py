@@ -263,8 +263,14 @@ original_profit = total_profit
 
 # ================= ALWAYS-ON SCENARIO LOGIC =================
 # Impact assumptions (simple + stable)
-discount_impact = 1 - (discount_change / 100) * 0.6
-price_impact = 1 + (price_change / 100) * 0.8
+# Positive demand response
+discount_impact = 1 + (discount_change / 100) * 0.4
+price_impact = 1 - (price_change / 100) * 0.6
+
+# Clamp to avoid unrealistic explosions
+discount_impact = max(0.7, discount_impact)
+price_impact = max(0.6, price_impact)
+
 
 projected_sales = original_sales * discount_impact * price_impact
 
