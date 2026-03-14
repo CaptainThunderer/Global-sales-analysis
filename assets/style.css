@@ -1,0 +1,460 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+body {
+    background-color: #0f172a;
+    /* Slate 900 */
+    color: #7bbaf9;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+/* Glassmorphism Container */
+.glass-container {
+    padding: 2rem;
+    position: relative;
+    z-index: 10;
+}
+
+/* Glass Panels */
+.glass-nav,
+.glass-filter-panel,
+.glass-chart-panel,
+.glass-kpi {
+    background: rgba(30, 41, 59, 0.4);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-mb {
+    margin-bottom: 2rem;
+}
+
+.glass-filter-panel {
+    position: relative;
+    z-index: 1000;
+    /* Strongly ensure dropdowns float above entire page */
+    overflow: visible !important;
+}
+
+/* Hover effects */
+.hover-float:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 40px rgba(34, 211, 238, 0.15);
+    border-color: rgba(34, 211, 238, 0.3);
+}
+
+/* Headers & Text */
+.glass-title {
+    font-weight: 700;
+    font-size: 2.5rem;
+    background: linear-gradient(135deg, #f8fafc, #94a3b8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+}
+
+.glass-subtitle {
+    color: #94a3b8;
+    font-weight: 400;
+    font-size: 1.1rem;
+}
+
+.glass-text-primary {
+    color: #f8fafc;
+    font-weight: 600;
+}
+
+.glass-text-secondary {
+    color: #94a3b8;
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.glass-chart-header {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.glass-separator {
+    height: 1px;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
+    margin: 1rem 0;
+}
+
+/* KPI specifics */
+.kpi-value {
+    font-size: 2.2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #22d3ee, #818cf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+}
+
+/* Upload Area */
+.glass-upload {
+    background: rgba(15, 23, 42, 0.6);
+    border: 2px dashed rgba(34, 211, 238, 0.4);
+    border-radius: 16px;
+    transition: all 0.3s ease;
+}
+
+.glass-upload:hover {
+    background: rgba(30, 41, 59, 0.8);
+    border-color: #22d3ee;
+    box-shadow: 0 0 20px rgba(34, 211, 238, 0.2);
+}
+
+.pulse-border {
+    animation: pulse-border 2s infinite;
+}
+
+/* Dash dropdown/input overrides */
+.Select-control {
+    background-color: rgba(15, 23, 42, 0.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 8px !important;
+    color: #f8fafc !important;
+    box-shadow: none !important;
+}
+
+.Select-value-label {
+    color: #fff !important;
+}
+
+.Select-placeholder {
+    color: #fff !important;
+}
+
+.Select-input>input {
+    color: #fff !important;
+}
+
+.Select-menu-outer {
+    background-color: #1e293b !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 8px !important;
+    color: #fff !important;
+    z-index: 9999 !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
+    margin-top: 4px !important;
+}
+
+.Select-option:hover,
+.Select-option.is-focused,
+.Select-option.is-selected {
+    background-color: #3b82f6 !important;
+    color: #fff !important;
+}
+
+/* Date picker overrides */
+.DateInput_input {
+    background-color: transparent !important;
+    color: #f8fafc !important;
+    border: none !important;
+    font-family: inherit !important;
+    padding: 8px 12px !important;
+}
+
+.DateInput_input::placeholder {
+    color: #fff !important;
+    opacity: 1 !important;
+}
+
+.DateRangePickerInput {
+    background-color: rgba(15, 23, 42, 0.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.DateRangePicker {
+    position: relative !important;
+    display: inline-block !important;
+    width: 100% !important;
+}
+
+.DateInput {
+    background: transparent !important;
+}
+
+.DateRangePickerInput_arrow_svg {
+    fill: #94a3b8 !important;
+}
+
+.DateRangePicker_picker {
+    z-index: 999999 !important;
+    background-color: #1e293b !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8) !important;
+    position: absolute !important;
+    top: 50px !important;
+    left: auto !important;
+    transform: none !important;
+    /* Ensure it isn't transformed beneath layout layers */
+}
+
+.CalendarMonth_caption,
+.DayPickerNavigation_button,
+.CalendarMonth_table,
+.CalendarMonth {
+    color: #f8fafc !important;
+    background-color: transparent !important;
+    border: none !important;
+}
+
+.DayPicker_transitionContainer,
+.DayPickerKeyboardShortcuts_buttonReset {
+    background-color: transparent !important;
+}
+
+.DayPicker_weekHeader {
+    color: #94a3b8 !important;
+    font-family: 'Inter', sans-serif !important;
+}
+
+.DayPicker_weekHeader_ul {
+    color: #94a3b8 !important;
+}
+
+.DayPicker_weekHeader_li {
+    color: #94a3b8 !important;
+}
+
+.CalendarDay {
+    background-color: #1e293b !important;
+    color: #18d5ed;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border-radius: 4px !important;
+    margin: 2px !important;
+}
+
+.CalendarMonthGrid {
+    background-color: transparent !important;
+}
+
+.DayPicker {
+    background-color: #1e293b !important;
+    border: none !important;
+    border-radius: 8px !important;
+}
+
+.DayPickerNavigation_button>svg {
+    fill: #f8fafc !important;
+}
+
+.CalendarDay:hover {
+    background-color: #3b82f6 !important;
+}
+
+.CalendarDay__selected,
+.CalendarDay__selected:active,
+.CalendarDay__selected:hover {
+    background: #22d3ee !important;
+    border: 1px solid #22d3ee !important;
+    color: #0f172a !important;
+}
+
+.CalendarDay__selected_span {
+    background: rgba(34, 211, 238, 0.2) !important;
+    border: 1px solid rgba(34, 211, 238, 0.5) !important;
+    color: #fff !important;
+}
+
+/* Background effects */
+.glow-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    z-index: 1;
+    opacity: 0.3;
+}
+
+.glow-orb-1 {
+    top: -10%;
+    left: -10%;
+    width: 500px;
+    height: 500px;
+    background: #4f46e5;
+    animation: float 15s ease-in-out infinite;
+}
+
+.glow-orb-2 {
+    bottom: -10%;
+    right: -10%;
+    width: 600px;
+    height: 600px;
+    background: #0ea5e9;
+    animation: float 20s ease-in-out infinite alternate;
+}
+
+.glow-orb-3 {
+    top: 40%;
+    left: 40%;
+    width: 400px;
+    height: 400px;
+    background: #8b5cf6;
+    animation: float 18s ease-in-out infinite reverse;
+}
+
+@keyframes float {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(50px, 50px);
+    }
+
+    100% {
+        transform: translate(0, 0);
+    }
+}
+
+@keyframes pulse-border {
+    0% {
+        border-color: rgba(34, 211, 238, 0.2);
+    }
+
+    50% {
+        border-color: rgba(34, 211, 238, 0.6);
+    }
+
+    100% {
+        border-color: rgba(34, 211, 238, 0.2);
+    }
+}
+
+/* Animations */
+.animate-fade-in-up {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-delay-1 {
+    animation-delay: 0.1s;
+}
+
+.animate-delay-2 {
+    animation-delay: 0.2s;
+}
+
+.animate-delay-3 {
+    animation-delay: 0.3s;
+}
+
+.animate-delay-4 {
+    animation-delay: 0.4s;
+}
+
+.animate-delay-5 {
+    animation-delay: 0.5s;
+}
+
+.animate-delay-6 {
+    animation-delay: 0.6s;
+}
+
+.animate-delay-7 {
+    animation-delay: 0.7s;
+}
+
+.animate-delay-8 {
+    animation-delay: 0.8s;
+}
+
+.animate-delay-9 {
+    animation-delay: 0.9s;
+}
+
+.animate-delay-10 {
+    animation-delay: 1.0s;
+}
+
+/* Radio Buttons */
+.glass-radio-segmented {
+    position: relative;
+    z-index: 1;
+    /* Keep lower than filter panel components */
+}
+
+.glass-radio-segmented label {
+    margin-right: 15px;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.2s;
+    position: relative;
+    z-index: 1;
+    /* Lowest child context */
+}
+
+.glass-radio-segmented input:checked+span {
+    color: #22d3ee;
+}
+
+.glass-radio-segmented label:hover {
+    background: rgba(30, 41, 59, 0.8);
+    border-color: #22d3ee;
+}
+
+/* Terminal / Report Area */
+.glass-terminal {
+    background: #0f172a;
+    border: 1px solid rgba(34, 211, 238, 0.3);
+    border-radius: 12px;
+    font-family: 'Courier New', Courier, monospace;
+    padding: 1.5rem;
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+.glass-terminal-header {
+    color: #22d3ee;
+    font-weight: 700;
+    border-bottom: 1px dashed rgba(34, 211, 238, 0.3);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.terminal-text {
+    color: #34d399;
+    white-space: pre-wrap;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.glass-button {
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.glass-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
+}

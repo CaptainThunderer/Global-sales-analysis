@@ -1,0 +1,1317 @@
+/* ============================================
+   LIQUID GLASS SYSTEM - VisionOS Premium
+   Complete glassmorphism design system
+   ============================================ */
+
+:root {
+    /* Glass colors */
+    --glass-base: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-glow: rgba(59, 130, 246, 0.2);
+    --glass-highlight: rgba(255, 255, 255, 0.15);
+    --glass-shadow: rgba(0, 0, 0, 0.3);
+    
+    /* Premium fintech colors */
+    --primary-glow: #3b82f6;
+    --secondary-glow: #8b5cf6;
+    --accent-glow: #06b6d4;
+    --success-glow: #10b981;
+    --warning-glow: #f59e0b;
+    --danger-glow: #ef4444;
+    
+    /* Text colors */
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --text-muted: rgba(255, 255, 255, 0.5);
+    
+    /* PART 1: Spacing grid system (8px micro, 24px section) */
+    --spacing-micro: 8px;
+    --spacing-unit: 24px;
+    
+    /* PART 1: Z-index layer system */
+    --z-background: 0;
+    --z-glass-panels: 10;
+    --z-interactive: 20;
+    --z-popups: 1050;
+    --z-modals: 2000;
+}
+
+/* ============================================
+   BASE GLASS CARD SYSTEM
+   PART 1: Standardized border, shadow depth
+   ============================================ */
+
+.glass-card {
+    background: var(--glass-base);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--glass-border);  /* PART 1: Consistent border opacity */
+    border-radius: 24px;
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.4),  /* PART 1: Consistent shadow depth */
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: var(--z-glass-panels);  /* PART 1: Layer 1 */
+}
+
+.glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        var(--glass-highlight),
+        transparent
+    );
+    opacity: 0.8;
+}
+
+.glass-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(
+        circle at 50% 0%,
+        rgba(255, 255, 255, 0.05),
+        transparent 50%
+    );
+    pointer-events: none;
+}
+
+/* Glass card depth variants */
+.glass-card-shallow {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.glass-card-deep {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(30px) saturate(200%);
+    -webkit-backdrop-filter: blur(30px) saturate(200%);
+    box-shadow: 
+        0 16px 48px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* ============================================
+   FLOATING NAVIGATION GLASS
+   PART 1: Consistent padding and z-index
+   ============================================ */
+
+.glass-nav {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid var(--glass-border);  /* PART 1: Consistent border */
+    border-radius: 20px;
+    padding: var(--spacing-unit);  /* PART 1: 24px spacing */
+    margin-bottom: calc(var(--spacing-unit) * 1.5);
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.4),  /* PART 1: Consistent shadow */
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+    z-index: var(--z-glass-panels);  /* PART 1: Layer 1 */
+}
+
+.glass-nav::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+    );
+    animation: shimmer 3s infinite;
+}
+
+.glass-separator {
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(59, 130, 246, 0.5),
+        transparent
+    );
+    margin: 12px 0;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+}
+
+/* Enhanced separator for chart panels */
+.glass-chart-panel .glass-separator {
+    margin: 16px 0;
+    box-shadow: 
+        0 0 15px rgba(59, 130, 246, 0.4),
+        0 1px 2px rgba(59, 130, 246, 0.2);
+}
+
+/* ============================================
+   HOLOGRAPHIC UPLOAD ZONE
+   PART 1: Z-index Layer 2 (Interactive Controls)
+   ============================================ */
+
+.glass-upload {
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 2px dashed rgba(59, 130, 246, 0.4);
+    border-radius: 20px;
+    padding: calc(var(--spacing-unit) * 1.5);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    pointer-events: auto;
+    z-index: var(--z-interactive);  /* PART 1: Layer 2 */
+}
+
+.glass-upload > * {
+    pointer-events: auto; /* Ensure child elements receive events */
+}
+
+.glass-upload::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+        circle,
+        rgba(59, 130, 246, 0.15) 0%,
+        transparent 50%
+    );
+    animation: pulse-glow 3s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.glass-upload:hover {
+    border-color: rgba(59, 130, 246, 0.8);
+    box-shadow: 
+        0 0 30px rgba(59, 130, 246, 0.3),
+        inset 0 0 30px rgba(59, 130, 246, 0.1);
+    transform: translateY(-2px);
+}
+
+.glass-upload::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    padding: 2px;
+    background: linear-gradient(
+        135deg,
+        rgba(59, 130, 246, 0.3),
+        rgba(139, 92, 246, 0.3),
+        rgba(6, 182, 212, 0.3)
+    );
+    -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+}
+
+.glass-upload:hover::after {
+    opacity: 1;
+}
+
+/* Drag Enter - Initial glow border */
+.glass-upload.drag-enter {
+    border-color: rgba(59, 130, 246, 0.7);
+    box-shadow: 
+        0 0 25px rgba(59, 130, 246, 0.4),
+        inset 0 0 20px rgba(59, 130, 246, 0.15);
+    transform: translateY(-2px) scale(1.01);
+}
+
+/* Drag Over - Stronger glow */
+.glass-upload.drag-over {
+    border-color: rgba(59, 130, 246, 1);
+    border-width: 3px;
+    box-shadow: 
+        0 0 40px rgba(59, 130, 246, 0.6),
+        0 0 80px rgba(59, 130, 246, 0.3),
+        inset 0 0 40px rgba(59, 130, 246, 0.2);
+    transform: translateY(-3px) scale(1.02);
+    background: rgba(59, 130, 246, 0.05);
+}
+
+/* Drop Success Animation */
+.glass-upload.drop-success {
+    border-color: rgba(16, 185, 129, 1);
+    border-style: solid;
+    box-shadow: 
+        0 0 50px rgba(16, 185, 129, 0.7),
+        0 0 100px rgba(16, 185, 129, 0.4),
+        inset 0 0 50px rgba(16, 185, 129, 0.3);
+    animation: drop-success-pulse 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    background: rgba(16, 185, 129, 0.1);
+}
+
+@keyframes drop-success-pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Drag Leave - Smooth transition out */
+.glass-upload.drag-leave {
+    border-color: rgba(59, 130, 246, 0.4);
+    box-shadow: none;
+    transform: translateY(0) scale(1);
+}
+
+
+/* ============================================
+   COCKPIT GLASS FILTERS
+   PART 1: Consistent border, shadow, z-index
+   ============================================ */
+
+.glass-filter-panel {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--glass-border);  /* PART 1: Consistent border */
+    border-radius: 20px;
+    padding: var(--spacing-unit);  /* PART 1: 24px spacing */
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.4),  /* PART 1: Consistent shadow */
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    position: relative;
+    z-index: var(--z-glass-panels);  /* PART 1: Layer 1 */
+}
+
+.glass-capsule {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);  /* PART 1: Consistent border */
+    border-radius: 12px;
+    padding: 12px 16px;
+    transition: all 0.3s ease;
+}
+
+.glass-capsule:hover,
+.glass-capsule:focus-within {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(59, 130, 246, 0.5);
+    box-shadow: 
+        0 0 20px rgba(59, 130, 246, 0.2),
+        inset 0 0 10px rgba(59, 130, 246, 0.1);
+    transform: translateY(-1px);
+}
+
+/* ============================================
+   ULTRA-PREMIUM KPI CARDS
+   PART 1: Consistent border, shadow, z-index
+   ============================================ */
+
+.glass-kpi {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(24px) saturate(200%);
+    -webkit-backdrop-filter: blur(24px) saturate(200%);
+    border: 1px solid var(--glass-border);  /* PART 1: Consistent border */
+    border-radius: 20px;
+    padding: calc(var(--spacing-unit) * 1.2);  /* PART 1: 24px based spacing */
+    position: relative;
+    z-index: var(--z-glass-panels);  /* PART 1: Layer 1 */
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.4),  /* PART 1: Consistent shadow */
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.glass-kpi::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.15),
+        transparent
+    );
+    transition: left 0.6s ease;
+}
+
+.glass-kpi:hover::before {
+    left: 100%;
+}
+
+.glass-kpi:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: rgba(59, 130, 246, 0.5);
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.5),
+        0 0 40px rgba(59, 130, 246, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Animated gradient border for KPI */
+.glass-kpi::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 20px;
+    padding: 2px;
+    background: linear-gradient(
+        135deg,
+        var(--primary-glow),
+        var(--secondary-glow),
+        var(--accent-glow)
+    );
+    background-size: 200% 200%;
+    animation: gradient-rotate 4s ease infinite;
+    -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.glass-kpi:hover::after {
+    opacity: 0.6;
+}
+
+/* KPI internal glow */
+.kpi-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(
+        circle,
+        rgba(59, 130, 246, 0.2) 0%,
+        transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.glass-kpi:hover .kpi-glow {
+    opacity: 1;
+}
+
+/* Gradient numbers for KPI */
+.kpi-value {
+    background: linear-gradient(
+        135deg,
+        #60a5fa,
+        #a78bfa,
+        #22d3ee
+    );
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradient-slide 3s ease infinite;
+    font-weight: 700;
+    font-size: 2.5rem;
+    line-height: 1;
+}
+
+/* ============================================
+   ELEVATED GLASS CHART PANELS
+   PART 1: Consistent border, shadow, z-index
+   ============================================ */
+
+.glass-chart-panel {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--glass-border);  /* PART 1: Consistent border */
+    border-radius: 20px;
+    padding: var(--spacing-unit);  /* PART 1: 24px spacing */
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.4),  /* PART 1: Consistent shadow */
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: var(--z-glass-panels);  /* PART 1: Layer 1 */
+}
+
+.glass-chart-panel:hover {
+    transform: translateY(-4px);
+    box-shadow: 
+        0 16px 50px rgba(0, 0, 0, 0.5),
+        0 0 30px rgba(59, 130, 246, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.glass-chart-header {
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+    box-shadow: 0 1px 10px rgba(59, 130, 246, 0.1);
+}
+
+.chart-depth-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(
+        circle at top right,
+        rgba(59, 130, 246, 0.1),
+        transparent 50%
+    );
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.glass-chart-panel:hover .chart-depth-overlay {
+    opacity: 1;
+}
+
+/* ============================================
+   GLASS TERMINAL (Report Console)
+   ============================================ */
+
+.glass-terminal {
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+    border: 1px solid rgba(6, 182, 212, 0.3);
+    border-radius: 16px;
+    padding: var(--spacing-unit);
+    box-shadow: 
+        0 12px 40px rgba(0, 0, 0, 0.6),
+        0 0 30px rgba(6, 182, 212, 0.2),
+        inset 0 0 20px rgba(6, 182, 212, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.glass-terminal::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(6, 182, 212, 0.05) 0px,
+        rgba(6, 182, 212, 0.05) 1px,
+        transparent 1px,
+        transparent 2px
+    );
+    pointer-events: none;
+    animation: terminal-scan 8s linear infinite;
+}
+
+.terminal-text {
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+    color: rgba(6, 182, 212, 0.95);
+    text-shadow: 
+        0 0 5px rgba(6, 182, 212, 0.5),
+        0 0 10px rgba(6, 182, 212, 0.3);
+    line-height: 1.6;
+    font-size: 0.9rem;
+}
+
+.glass-terminal-header {
+    background: rgba(6, 182, 212, 0.1);
+    border-bottom: 1px solid rgba(6, 182, 212, 0.3);
+    padding: 12px 16px;
+    border-radius: 16px 16px 0 0;
+    margin: calc(var(--spacing-unit) * -1) calc(var(--spacing-unit) * -1) var(--spacing-unit);
+    color: rgba(6, 182, 212, 1);
+    font-weight: 600;
+    text-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+}
+
+/* ============================================
+   GLASS BUTTONS
+   ============================================ */
+
+.glass-button {
+    background: rgba(59, 130, 246, 0.15);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 12px;
+    padding: 12px 24px;
+    color: var(--text-primary);
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.glass-button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(59, 130, 246, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease;
+}
+
+.glass-button:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.glass-button:hover {
+    background: rgba(59, 130, 246, 0.25);
+    border-color: rgba(59, 130, 246, 0.6);
+    box-shadow: 
+        0 0 20px rgba(59, 130, 246, 0.4),
+        inset 0 0 20px rgba(59, 130, 246, 0.1);
+    transform: translateY(-2px);
+}
+
+/* ============================================
+   RESPONSIVE CONTAINER SYSTEM
+   ============================================ */
+
+.glass-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: calc(var(--spacing-unit) * 2);
+    position: relative;
+    z-index: 1;
+}
+
+@media (max-width: 1200px) {
+    .glass-container {
+        max-width: 100%;
+        padding: var(--spacing-unit);
+    }
+}
+
+/* ============================================
+   GRID SYSTEM (24px modular)
+   ============================================ */
+
+.glass-grid {
+    display: grid;
+    gap: var(--spacing-unit);
+}
+
+.glass-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.glass-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.glass-grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 992px) {
+    .glass-grid-2,
+    .glass-grid-3,
+    .glass-grid-4 {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+
+.glass-text-primary {
+    color: var(--text-primary);
+}
+
+.glass-text-secondary {
+    color: var(--text-secondary);
+}
+
+.glass-text-muted {
+    color: var(--text-muted);
+}
+
+.glass-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    background: linear-gradient(
+        135deg,
+        #ffffff,
+        rgba(255, 255, 255, 0.7)
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.glass-subtitle {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.glass-spacer {
+    height: var(--spacing-unit);
+}
+
+.glass-spacer-lg {
+    height: calc(var(--spacing-unit) * 2);
+}
+
+.glass-mb {
+    margin-bottom: var(--spacing-unit);
+}
+
+.glass-mt {
+    margin-top: var(--spacing-unit);
+}
+
+.text-glow {
+    text-shadow: 0 0 10px currentColor;
+}
+
+/* Dark mode overrides for Dash components */
+.glass-capsule .Select-control,
+.glass-capsule .DateInput,
+.glass-capsule div[role="radiogroup"] {
+    background: rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px !important;
+    color: var(--text-primary) !important;
+}
+
+/* Enhanced Date Picker Styling */
+.glass-date-picker {
+    position: relative;
+    /* Note: z-index intentionally lower than popup (1000) since popup uses position: fixed and breaks out of parent stacking context */
+}
+
+.glass-date-picker .DateInput {
+    padding: 8px 12px !important;
+}
+
+.glass-date-picker .DateInput_input {
+    background: transparent !important;
+    color: var(--text-primary) !important;
+    font-size: 14px !important;
+    border: none !important;
+    padding: 8px !important;
+}
+
+.glass-date-picker .DateInput_input::placeholder {
+    color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.glass-date-picker .DateRangePickerInput {
+    background: transparent !important;
+    border: none !important;
+}
+
+.glass-date-picker .DateRangePickerInput_arrow {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.DateInput_fang {
+    display: none !important;
+}
+
+/* ============================================
+   DATE PICKER POPUP OVERLAY FIX
+   Critical z-index and positioning for proper layering
+   STRICT CSS NAMESPACE ISOLATION
+   ============================================ */
+
+/* Namespace all react-datepicker variants for strict isolation */
+.react-datepicker,
+.react-datepicker__portal,
+.react-datepicker__wrapper,
+.react-datepicker-popper,
+div[class*="react-datepicker"],
+div[class*="DatePicker"],
+div[class*="DayPicker"] {
+    /* Prevent any global CSS from leaking into calendar */
+}
+
+/* Reset any global table styles that might interfere with calendar grid */
+.DayPicker table,
+.DayPicker tbody,
+.DayPicker tr,
+.DayPicker td,
+.CalendarMonth_table,
+.CalendarMonth_table tbody,
+.CalendarMonth_table tr,
+.CalendarMonth_table td,
+.react-datepicker table,
+.react-datepicker tbody,
+.react-datepicker tr,
+.react-datepicker td {
+    display: table !important;
+    border-collapse: collapse !important;
+    width: auto !important;
+    height: auto !important;
+    background: transparent !important;
+}
+
+.CalendarMonth_table {
+    display: table !important;
+}
+
+.CalendarMonth_table tbody {
+    display: table-row-group !important;
+}
+
+.CalendarMonth_table tr {
+    display: table-row !important;
+}
+
+.CalendarMonth_table td {
+    display: table-cell !important;
+    vertical-align: middle !important;
+    text-align: center !important;
+}
+
+/* Calendar popup container - HIGH OPACITY glassmorphic dark background */
+/* High specificity to override react-dates defaults */
+.DayPicker,
+.DayPicker__horizontal,
+.DayPicker_portal,
+.DayPicker_portal__horizontal,
+div.DayPicker,
+div.DayPicker__horizontal {
+    background: rgba(8, 12, 25, 0.96) !important;  /* HIGH OPACITY - NO LOW OPACITY GLASS */
+    backdrop-filter: blur(24px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+    border: 2px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 18px !important;
+    box-shadow: 
+        0 25px 70px rgba(0, 0, 0, 0.8),
+        0 0 40px rgba(59, 130, 246, 0.3) !important;
+    padding: 16px !important;
+    z-index: 1100 !important;
+    position: fixed !important;  /* Use fixed to break out of parent stacking */
+    min-width: 320px !important;
+    height: auto !important;
+}
+
+.DayPicker_transitionContainer,
+.DayPicker_transitionContainer__horizontal {
+    background: transparent !important;
+}
+
+.SingleDatePickerInput_calendarIcon,
+.DateRangePickerInput_calendarIcon {
+    padding: 0 !important;
+    margin: 0 8px !important;
+}
+
+.CalendarMonth,
+.CalendarMonth_table {
+    background: transparent !important;
+}
+
+/* Fix for the white overlay issue */
+.DayPicker_focusRegion {
+    background: transparent !important;
+}
+
+/* Ensure calendar container has dark background and proper z-index */
+.DateRangePicker_picker,
+.DateRangePicker_picker__horizontal,
+.SingleDatePicker_picker,
+.SingleDatePicker_picker__horizontal,
+div.DateRangePicker_picker,
+div.SingleDatePicker_picker {
+    background: rgba(8, 12, 25, 0.96) !important;  /* HIGH OPACITY - NO LOW OPACITY GLASS */
+    backdrop-filter: blur(24px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+    border-radius: 18px !important;
+    border: 2px solid rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 
+        0 25px 70px rgba(0, 0, 0, 0.8),
+        0 0 40px rgba(59, 130, 246, 0.3) !important;
+    z-index: 1100 !important;
+    position: fixed !important;  /* CRITICAL: Use fixed to break out of parent overflow/transform */
+    transition: opacity 0.22s cubic-bezier(.46,.03,.52,.96), transform 0.22s cubic-bezier(.46,.03,.52,.96) !important;
+    /* Prevent parent transform/overflow from clipping popup */
+    transform: none !important;
+    will-change: auto !important;
+}
+
+/* Override any white backgrounds in calendar wrapper */
+.DateRangePicker_picker__openDown,
+.SingleDatePicker_picker__openDown {
+    background: rgba(8, 12, 25, 0.96) !important;  /* HIGH OPACITY */
+    z-index: 1100 !important;
+}
+
+/* Make sure calendar month has dark background */
+.CalendarMonthGrid,
+.CalendarMonthGrid__horizontal,
+.CalendarMonthGrid__vertical {
+    background: transparent !important;
+}
+
+/* Override default white background on the wrapper */
+.DayPicker > div,
+.DayPicker_wrapper,
+.DayPicker__withBorder {
+    background: transparent !important;
+}
+
+.CalendarDay__selected,
+.CalendarDay__selected:active,
+.CalendarDay__selected:hover {
+    background: rgba(59, 130, 246, 0.8) !important;
+    border: 1px solid rgba(59, 130, 246, 1) !important;
+    color: white !important;
+}
+
+.CalendarDay__selected_span {
+    background: rgba(59, 130, 246, 0.3) !important;
+    border: 1px solid rgba(59, 130, 246, 0.5) !important;
+}
+
+.CalendarDay__hovered_span,
+.CalendarDay__hovered_span:hover {
+    background: rgba(59, 130, 246, 0.2) !important;
+    border: 1px solid rgba(59, 130, 246, 0.3) !important;
+}
+
+.DayPickerNavigation_button {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 8px !important;
+}
+
+.DayPickerNavigation_button:hover {
+    background: rgba(59, 130, 246, 0.2) !important;
+    border-color: rgba(59, 130, 246, 0.5) !important;
+}
+
+.DayPicker_weekHeader {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.CalendarMonth_caption {
+    color: var(--text-primary) !important;
+    font-weight: 600 !important;
+}
+
+.CalendarDay {
+    color: rgba(255, 255, 255, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.CalendarDay:hover {
+    background: rgba(59, 130, 246, 0.2) !important;
+    border-color: rgba(59, 130, 246, 0.4) !important;
+}
+
+.CalendarDay__blocked_out_of_range {
+    color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Glass Segmented Radio Control */
+.glass-radio-segmented {
+    display: flex !important;
+    gap: 8px !important;
+}
+
+.glass-radio-segmented label {
+    background: rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px !important;
+    padding: 12px 20px !important;
+    margin: 0 !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-weight: 500 !important;
+    min-width: 100px !important;
+}
+
+.glass-radio-segmented label:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(59, 130, 246, 0.4) !important;
+    transform: translateY(-2px) !important;
+}
+
+.glass-radio-segmented input[type="radio"]:checked + label {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(139, 92, 246, 0.3)) !important;
+    border-color: rgba(59, 130, 246, 0.8) !important;
+    box-shadow: 
+        0 0 20px rgba(59, 130, 246, 0.4),
+        inset 0 0 20px rgba(59, 130, 246, 0.2) !important;
+    transform: translateY(-2px) scale(1.05) !important;
+    font-weight: 600 !important;
+}
+
+.glass-radio-segmented input[type="radio"] {
+    opacity: 0 !important;
+    position: absolute !important;
+    pointer-events: none !important;
+}
+
+/* Anomaly Toggle Styling */
+#show-anomalies label {
+    color: rgba(255, 255, 255, 0.7) !important;
+    font-weight: 400 !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+    user-select: none !important;
+}
+
+#show-anomalies input[type="checkbox"] {
+    margin-right: 8px !important;
+    cursor: pointer !important;
+    width: 18px !important;
+    height: 18px !important;
+    accent-color: #3b82f6 !important;
+}
+
+.Select-menu-outer {
+    background: rgba(8, 12, 25, 0.96) !important;  /* HIGH OPACITY - NO LOW OPACITY GLASS */
+    backdrop-filter: blur(24px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+    border: 2px solid rgba(255, 255, 255, 0.25) !important;  /* STRONGER BORDER */
+    border-radius: 12px !important;
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.8),
+        0 0 30px rgba(59, 130, 246, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    z-index: 1050 !important;
+}
+
+.Select-option {
+    background: transparent !important;
+    color: var(--text-primary) !important;
+    padding: 10px 12px !important;
+    transition: all 0.2s ease !important;
+}
+
+.Select-option:hover,
+.Select-option.is-focused {
+    background: rgba(59, 130, 246, 0.3) !important;
+    color: #ffffff !important;
+}
+
+.Select-option.is-selected {
+    background: rgba(59, 130, 246, 0.5) !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+}
+
+/* Strengthen filter capsule backgrounds */
+.glass-capsule {
+    background: rgba(8, 12, 25, 0.7) !important;  /* STRONGER BACKGROUND */
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.2) !important;  /* STRONGER BORDER */
+    border-radius: 12px;
+    padding: 12px 16px;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+.glass-capsule:hover,
+.glass-capsule:focus-within {
+    background: rgba(8, 12, 25, 0.85) !important;  /* EVEN STRONGER ON HOVER */
+    border-color: rgba(59, 130, 246, 0.6) !important;
+    box-shadow: 
+        0 0 20px rgba(59, 130, 246, 0.3),
+        inset 0 0 10px rgba(59, 130, 246, 0.1) !important;
+    transform: translateY(-1px);
+}
+
+/* Multi-value tags in dropdowns */
+.Select-value {
+    background: rgba(59, 130, 246, 0.4) !important;
+    border: 1px solid rgba(59, 130, 246, 0.6) !important;
+    color: #ffffff !important;
+    border-radius: 6px !important;
+    padding: 4px 8px !important;
+}
+
+.Select-value-label {
+    color: #ffffff !important;
+    font-weight: 500 !important;
+}
+
+label {
+    color: var(--text-secondary) !important;
+    font-weight: 500 !important;
+    margin-bottom: 8px !important;
+    display: block;
+}
+
+/* ============================================
+   ADDITIONAL POPUP/PORTAL Z-INDEX FIXES
+   Critical for preventing overlay bugs
+   ============================================ */
+
+/* Ensure all date picker portal containers render above everything */
+.DayPicker_portal__vertical,
+.DateRangePicker_picker__portal,
+.SingleDatePicker_picker__portal,
+[class*="DatePicker"][class*="portal"],
+[class*="DayPicker"][class*="portal"] {
+    z-index: 1100 !important;
+    position: fixed !important;
+}
+
+/* Fix for any wrapper divs that might contain the calendar */
+.DateRangePicker,
+.SingleDatePicker {
+    position: relative;
+}
+
+/* KPI card explicit stacking context - only targets the main glass-kpi class */
+.glass-kpi {
+    /* z-index already set to var(--z-glass-panels) in main definition */
+}
+
+/* Ensure chart panels stay below popups */
+.glass-chart-panel {
+    /* z-index already managed at component level, inherits from natural stacking */
+}
+
+/* ============================================
+   MODERN REACT-SELECT DROPDOWN STYLING
+   For Dash 2.x dcc.Dropdown components
+   High-contrast, readable dropdowns with clear borders
+   ============================================ */
+
+/* Dropdown control/input box */
+.Select__control,
+div[class*="Select__control"] {
+    background: rgba(8, 12, 25, 0.7) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 12px !important;
+    min-height: 38px !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+    transition: all 0.3s ease !important;
+}
+
+.Select__control:hover,
+div[class*="Select__control"]:hover,
+.Select__control--is-focused,
+div[class*="Select__control--is-focused"] {
+    background: rgba(8, 12, 25, 0.85) !important;
+    border-color: rgba(59, 130, 246, 0.6) !important;
+    box-shadow: 
+        0 0 20px rgba(59, 130, 246, 0.3),
+        inset 0 0 10px rgba(59, 130, 246, 0.1) !important;
+}
+
+/* Dropdown menu container - HIGH OPACITY */
+.Select__menu,
+div[class*="Select__menu"] {
+    background: rgba(8, 12, 25, 0.96) !important;  /* HIGH OPACITY - NO LOW OPACITY GLASS */
+    backdrop-filter: blur(24px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+    border: 2px solid rgba(255, 255, 255, 0.25) !important;  /* STRONGER BORDER */
+    border-radius: 12px !important;
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.8),
+        0 0 30px rgba(59, 130, 246, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    z-index: 1050 !important;
+    margin-top: 4px !important;
+    overflow: hidden !important;
+}
+
+.Select__menu-list,
+div[class*="Select__menu-list"] {
+    background: transparent !important;
+    padding: 4px !important;
+}
+
+/* Dropdown menu portal - for portaled menus */
+.Select__menu-portal,
+div[class*="Select__menu-portal"] {
+    z-index: 1050 !important;
+}
+
+/* Dropdown options - READABLE WHITE TEXT */
+.Select__option,
+div[class*="Select__option"] {
+    background: transparent !important;
+    color: rgba(255, 255, 255, 0.95) !important;  /* READABLE WHITE TEXT */
+    padding: 10px 12px !important;
+    transition: all 0.2s ease !important;
+    cursor: pointer !important;
+    border-radius: 8px !important;
+    margin: 2px 0 !important;
+}
+
+.Select__option:hover,
+div[class*="Select__option"]:hover,
+.Select__option--is-focused,
+div[class*="Select__option--is-focused"] {
+    background: rgba(59, 130, 246, 0.3) !important;
+    color: #ffffff !important;  /* PURE WHITE ON HOVER */
+}
+
+.Select__option--is-selected,
+div[class*="Select__option--is-selected"] {
+    background: rgba(59, 130, 246, 0.5) !important;
+    color: #ffffff !important;  /* PURE WHITE WHEN SELECTED */
+    font-weight: 600 !important;
+}
+
+/* Selected value text in control */
+.Select__single-value,
+div[class*="Select__single-value"] {
+    color: rgba(255, 255, 255, 0.95) !important;  /* READABLE WHITE TEXT */
+}
+
+/* Placeholder text */
+.Select__placeholder,
+div[class*="Select__placeholder"] {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Multi-value tags - NO VANISHING TAGS */
+.Select__multi-value,
+div[class*="Select__multi-value"] {
+    background: rgba(59, 130, 246, 0.4) !important;
+    border: 1px solid rgba(59, 130, 246, 0.6) !important;
+    border-radius: 6px !important;
+    padding: 2px !important;
+    margin: 2px !important;
+}
+
+.Select__multi-value__label,
+div[class*="Select__multi-value__label"] {
+    color: #ffffff !important;  /* WHITE TEXT FOR TAGS */
+    font-weight: 500 !important;
+    padding: 3px 6px !important;
+}
+
+.Select__multi-value__remove,
+div[class*="Select__multi-value__remove"] {
+    color: rgba(255, 255, 255, 0.8) !important;
+    background: transparent !important;
+    border-radius: 0 4px 4px 0 !important;
+    padding: 0 4px !important;
+    cursor: pointer !important;
+}
+
+.Select__multi-value__remove:hover,
+div[class*="Select__multi-value__remove"]:hover {
+    background: rgba(239, 68, 68, 0.3) !important;
+    color: #ffffff !important;
+}
+
+/* Dropdown indicators */
+.Select__indicator,
+div[class*="Select__indicator"] {
+    color: rgba(255, 255, 255, 0.6) !important;
+    cursor: pointer !important;
+}
+
+.Select__indicator:hover,
+div[class*="Select__indicator"]:hover {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.Select__indicator-separator,
+div[class*="Select__indicator-separator"] {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Clear indicator */
+.Select__clear-indicator,
+div[class*="Select__clear-indicator"] {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.Select__clear-indicator:hover,
+div[class*="Select__clear-indicator"]:hover {
+    color: rgba(239, 68, 68, 0.8) !important;
+}
+
+/* Input text color */
+.Select__input,
+div[class*="Select__input"] {
+    color: rgba(255, 255, 255, 0.95) !important;
+}
+
+.Select__input input,
+div[class*="Select__input"] input {
+    color: rgba(255, 255, 255, 0.95) !important;
+}
+
+/* Value container */
+.Select__value-container,
+div[class*="Select__value-container"] {
+    padding: 4px 8px !important;
+}
+
+/* Loading indicator */
+.Select__loading-indicator,
+div[class*="Select__loading-indicator"] {
+    color: rgba(59, 130, 246, 0.8) !important;
+}
+
+/* ============================================
+   CHART LINE GLOW EFFECTS FOR HIGH CONTRAST
+   Adds subtle glow/blur to chart lines for separation
+   Applied selectively to avoid performance impact
+   ============================================ */
+
+/* Subtle glow for chart lines - performance optimized */
+.js-plotly-plot .scatterlayer .trace:hover {
+    filter: drop-shadow(0 0 3px currentColor);
+}
+
+/* Make sure markers have clear visibility on hover */
+.js-plotly-plot .scatterlayer .point:hover {
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.6));
+}
