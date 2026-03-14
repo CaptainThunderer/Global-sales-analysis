@@ -1,136 +1,265 @@
-# 📊 Global Sales Analytics Dashboard
+# 🌍 Global Sales Analytics Dashboard
 
-## 📌 Project Overview
-
-The **Global Sales Analytics Dashboard** is a web-based interactive data analytics application developed using **Streamlit**. It enables users to analyze historical sales data across multiple countries and products using dynamic filters, visualizations, and basic forecasting techniques. The dashboard helps in understanding sales trends, identifying top-performing products, and supporting data-driven business decisions.
-
----
-
-## 🎯 Objectives
-
-* To analyze sales data across different regions and products
-* To provide interactive filtering based on country, product, and date range
-* To visualize sales trends using charts and heatmaps
-* To perform basic sales forecasting
-* To present key performance indicators (KPIs) clearly
+An **interactive business intelligence dashboard** for analyzing global sales data, built using **Dash, Plotly, and Python**.
+The system allows users to upload a CSV dataset, apply dynamic filters, visualize trends, detect anomalies, forecast future sales, and generate downloadable business reports.
 
 ---
 
-## 🛠️ Features
+# 📊 Features
 
-* 📌 Country and product-based filtering
-* 📅 Date range selection for time-series analysis
-* 📈 Monthly sales trend visualization
-* 🔮 Sales forecasting using Exponential Moving Average (EMA)
-* 📊 Product-wise sales comparison
-* 🔥 Country vs Product heatmap
-* 📋 Detailed summary report
+### 📂 CSV Upload
+
+Users can upload their own sales dataset in CSV format.
+The system automatically validates the schema and loads the data for analysis.
+
+Required dataset columns:
+
+* `Order_Date`
+* `Country`
+* `Product`
+* `Sales`
+* `Profit`
+* `Discount`
 
 ---
 
-## 🧠 Technology Stack
+### 🔎 Dynamic Filtering
+
+The dashboard supports interactive filters:
+
+* Country filter
+* Product filter
+* Date range selection
+* Forecast horizon selection (6 or 12 months)
+
+All charts update instantly based on the selected filters.
+
+---
+
+### 📈 Monthly Sales Trend
+
+Visualizes sales performance over time using interactive Plotly line charts.
+
+Features:
+
+* Smooth line visualization
+* Hover analytics
+* Optional anomaly markers
+
+---
+
+### 🔮 Sales Forecasting
+
+The system implements **Holt-Winters Double Exponential Smoothing** for forecasting future sales trends.
+
+Forecast parameters:
+
+* Level smoothing factor (α) = 0.3
+* Trend smoothing factor (β) = 0.1
+
+Users can forecast sales for:
+
+* 6 months
+* 12 months
+
+---
+
+### 🚨 Anomaly Detection
+
+The dashboard detects unusual sales patterns using a **rolling Z-score method**.
+
+Steps:
+
+1. Compute rolling mean and standard deviation
+2. Calculate Z-score
+3. Flag anomalies where:
+
+[
+|Z| > 2.5
+]
+
+Anomalies are highlighted in:
+
+* the sales trend chart
+* a dedicated anomaly timeline
+
+---
+
+### 📊 KPI Indicators
+
+Key business metrics are displayed at the top of the dashboard:
+
+* Total Sales
+* Total Profit
+* Average Discount
+* Number of Detected Anomalies
+
+---
+
+### 📉 Product Sales Analysis
+
+Bar charts visualize the performance of different products.
+
+This helps identify:
+
+* top selling products
+* low performing categories
+
+---
+
+### 🔥 Country vs Product Heatmap
+
+A heatmap visualizes the relationship between countries and product sales.
+
+Special features:
+
+* Dynamic text color based on WCAG luminance calculation
+* Accessibility-aware visualization
+* Adaptive heatmap height for large datasets
+
+---
+
+### 🥧 Sales Distribution
+
+Interactive pie chart displaying sales share by:
+
+* Country
+* Product
+
+Users can toggle the visualization mode dynamically.
+
+---
+
+### 📊 Country vs Product Comparison
+
+Grouped bar charts allow comparison of product performance across different countries.
+
+---
+
+### 📄 Business Summary Report
+
+The dashboard automatically generates a summarized report including:
+
+* total sales
+* total profit
+* top country
+* top product
+* timestamp
+
+The report can be downloaded as a `.txt` file.
+
+---
+
+# 🧠 Technologies Used
 
 ### Programming Language
 
 * Python
 
-### Libraries & Frameworks
+### Frameworks
 
-* **Streamlit** – Web-based interactive dashboard
-* **Pandas** – Data loading, cleaning, and aggregation
-* **NumPy** – Numerical computations
-* **Matplotlib** – Data visualization
-* **Seaborn** – Advanced statistical visualizations
+* Dash
+* Dash Bootstrap Components
 
----
+### Data Analysis
 
-## 📂 Dataset Information
+* Pandas
+* NumPy
+* SciPy
 
-* Format: CSV file
-* Time Period: 2020 – 2021
-* Attributes include:
+### Visualization
 
-  * Order Date
-  * Country
-  * Product
-  * Category
-  * Sales
-  * Profit
-  * Discount
-  * Quantity
+* Plotly
+* Plotly Express
+* Plotly Graph Objects
+
+### Styling
+
+* Custom CSS animations
+* Glassmorphism UI design
 
 ---
 
-## ▶️ How to Run the Project
-
-### 1️⃣ Install Required Libraries
-
-```bash
-pip install streamlit pandas numpy matplotlib seaborn
-```
-
-### 2️⃣ Project Structure
+# 📂 Project Structure
 
 ```
-Sales_Analytics_Dashboard/
+Global-sales-analysis
 │
-├── app.py
-├── sales_data.csv
-└── README.md
+├── new.py
+├── README.md
+├── global_sales_daily_updated.csv
+│
+└── assets/
+    ├── animations.css
+    ├── background.css
+    ├── drag_drop.js
+    ├── liquid_glass.css
+    └── style.css
 ```
 
-### 3️⃣ Run the Application
+The **assets folder** contains custom styles, animations, and UI effects.
+
+---
+
+# ▶️ How to Run the Project
+
+### 1️⃣ Install dependencies
 
 ```bash
-streamlit run app.py
+pip install dash dash-bootstrap-components plotly pandas numpy scipy
 ```
 
-The dashboard will open automatically in your web browser.
+---
+
+### 2️⃣ Run the application
+
+```bash
+python new.py
+```
 
 ---
 
-## 🧪 Usage Instructions
+### 3️⃣ Open in browser
 
-1. Select one or more countries and products using the filters
-2. Choose the desired date range
-3. View updated KPIs, charts, and forecasts dynamically
-4. Modify filters to explore different insights
-
----
-
-## 📈 Forecasting Technique
-
-The dashboard uses **Exponential Moving Average (EMA)** for basic sales forecasting. EMA assigns greater weight to recent data points, making it suitable for short-term trend prediction.
+```
+http://127.0.0.1:8050
+```
 
 ---
 
-## ✅ Advantages
+# 📊 Example Workflow
 
-* Interactive and user-friendly interface
-* Real-time filtering and visualization
-* Lightweight and easy to deploy
-* No complex backend or database required
-
----
-
-## 🔮 Future Enhancements
-
-* Integration of advanced forecasting models (ARIMA, Prophet)
-* Real-time database connectivity
-* Export reports to PDF or Excel
-* Role-based user authentication
-* Currency normalization and inflation-adjusted analysis
+1. Upload a CSV dataset
+2. Select countries and products
+3. Adjust date range filters
+4. Analyze sales trends
+5. View anomaly detection
+6. Forecast future sales
+7. Download the business report
 
 ---
 
-## 👨‍🎓 Academic Relevance
+# 📈 Key Capabilities
 
-This project demonstrates practical applications of:
+✔ Interactive business intelligence dashboard
+✔ CSV-driven analytics system
+✔ Built-in anomaly detection
+✔ Time-series forecasting
+✔ Accessible data visualizations
+✔ Dynamic filtering system
+✔ Downloadable analytical reports
 
-* Data analytics
-* Time-series analysis
-* Data visualization
-* Web-based dashboard development using Python
+---
+
+# 🎯 Use Cases
+
+This dashboard can be used for:
+
+* sales performance monitoring
+* business intelligence analysis
+* trend forecasting
+* anomaly detection in revenue streams
+* strategic decision making
 
 ---
 
